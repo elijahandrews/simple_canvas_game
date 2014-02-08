@@ -57,8 +57,8 @@ var reset = function () {
 
 var placeMonster = function () {
 	// Throw the monster somewhere on the screen randomly
-	monster.x = 32 + (Math.random() * (canvas.width - 64));
-	monster.y = 32 + (Math.random() * (canvas.height - 64));
+	monster.x = 32 + (Math.random() * (canvas.width - 96));
+	monster.y = 32 + (Math.random() * (canvas.height - 96));
 }
 
 // Update game objects
