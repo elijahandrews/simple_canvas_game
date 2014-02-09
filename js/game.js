@@ -35,7 +35,7 @@ var hero = {
 };
 var monster = {
 	speed: 150,
-	direction: null
+	directions: [null, null]
 };
 var monstersCaught = 0;
 
@@ -109,7 +109,9 @@ var update = function (modifier) {
 		if (direction) moveEntity(hero, modifier, keyToDirection[key]);
 	}
 
-	moveEntity(monster, modifier, monster.direction);
+	for (var i = 0; i < 2; i++) {
+		moveEntity(monster, modifier, monster.directions[i]);
+	}
 
 	// Are they touching?
 	if (
@@ -123,8 +125,15 @@ var update = function (modifier) {
 	}
 };
 
-var changeMonsterDirection = function() {
-	monster.direction = directions[Math.floor(Math.random() * directions.length)];
+var changeMonsterDirections = function() {
+	for (var i = 0; i < 2; i++) {
+		monster.directions[i] = directions[Math.floor(Math.random() * directions.length)];
+	}
+	// If both directions are the same, null out one of them so that 
+	// the monster doesn't move twice as fast
+	if (monster.directions[0] == monster.directions[1]) {
+		monster.directions[1] = null;
+	}
 }
 
 // Draw everything
@@ -164,4 +173,4 @@ var main = function () {
 reset();
 var then = Date.now();
 setInterval(main, 1); // Execute as fast as possible
-setInterval(changeMonsterDirection, 1000);
+setInterval(changeMonsterDirections, 1000);
