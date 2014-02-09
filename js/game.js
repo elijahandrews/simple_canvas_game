@@ -33,7 +33,10 @@ monsterImage.src = "images/monster.png";
 var hero = {
 	speed: 256 // movement in pixels per second
 };
-var monster = {};
+var monster = {
+	speed: 150,
+	direction: null
+};
 var monstersCaught = 0;
 
 // Handle keyboard controls
@@ -59,30 +62,54 @@ var placeMonster = function () {
 	// Throw the monster somewhere on the screen randomly
 	monster.x = 32 + (Math.random() * (canvas.width - 96));
 	monster.y = 32 + (Math.random() * (canvas.height - 96));
-}
+};
+
+var moveEntity = function (entity, modifier, direction) {
+	switch (direction) {
+	case 38:
+	case 'up':
+		if (entity.y >= 32) { // Check collision with top wall
+			entity.y -= entity.speed * modifier;
+		}
+		break;
+	case 40:
+	case 'down':
+		if (entity.y <= canvas.height - 64) { // Check collision with bottom wall
+			entity.y += entity.speed * modifier;
+		}
+		break;
+	case 37:
+	case 'left':
+		if (entity.x >= 32) { // Check collision with left wall
+			entity.x -= entity.speed * modifier;
+		}
+		break;
+	case 39:
+	case 'right':
+		if (entity.x <= canvas.width - 64) {
+			entity.x += entity.speed * modifier;
+		}
+		break;
+	}
+};
+
+var keyToDirection = {
+	38: 'up',
+	40: 'down',
+	37: 'left',
+	39: 'right'
+};
+
+var directions = [37, 38, 39, 40];
 
 // Update game objects
 var update = function (modifier) {
-	if (38 in keysDown) { // Player holding up
-		if (hero.y >= 32) { // Check collision with top wall
-			hero.y -= hero.speed * modifier;
-		}
+	for (key in keysDown) {
+		var direction = keyToDirection[key];
+		if (direction) moveEntity(hero, modifier, keyToDirection[key]);
 	}
-	if (40 in keysDown) { // Player holding down
-		if (hero.y <= canvas.height - 64) { // Check collision with bottom wall
-			hero.y += hero.speed * modifier;
-		}
-	}
-	if (37 in keysDown) { // Player holding left
-		if (hero.x >= 32) { // Check collision with left wall
-			hero.x -= hero.speed * modifier;
-		}
-	}
-	if (39 in keysDown) { // Player holding right
-		if (hero.x <= canvas.width - 64) {
-			hero.x += hero.speed * modifier;
-		}
-	}
+
+	moveEntity(monster, modifier, monster.direction);
 
 	// Are they touching?
 	if (
@@ -95,6 +122,10 @@ var update = function (modifier) {
 		placeMonster();
 	}
 };
+
+var changeMonsterDirection = function() {
+	monster.direction = directions[Math.floor(Math.random() * directions.length)];
+}
 
 // Draw everything
 var render = function () {
@@ -133,3 +164,4 @@ var main = function () {
 reset();
 var then = Date.now();
 setInterval(main, 1); // Execute as fast as possible
+setInterval(changeMonsterDirection, 1000);
